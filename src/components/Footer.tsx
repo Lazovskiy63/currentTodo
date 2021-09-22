@@ -1,6 +1,8 @@
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
-const Footer = ({ setFilter, CONSTANTS }) => {
+import { CONSTANTS } from './types/types';
+
+const Footer = ({ setFilter }: { setFilter: Function }) => {
   return (
     <Box>
       <Button onClick={() => setFilter(CONSTANTS.ALL)}>all</Button>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import firebase from 'firebase';
 import { Input, Button } from '@mui/material';
 import { Box } from '@mui/system';
-const AddTaskPanel = ({ currentUid }) => {
+const AddTaskPanel = ({ currentUid }: { currentUid: string }) => {
   const [inputAddPanel, setInputAddPanel] = useState('');
 
   const addTask = () => {
@@ -16,7 +16,9 @@ const AddTaskPanel = ({ currentUid }) => {
       });
     setInputAddPanel('');
   };
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     if (e.key === 'Enter') {
       addTask();
     }

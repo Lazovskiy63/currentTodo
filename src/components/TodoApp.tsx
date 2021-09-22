@@ -4,14 +4,14 @@ import AddTaskPanel from './AddTaskPanel';
 import Footer from './Footer';
 import { useState } from 'react';
 import { Container } from '@mui/material';
-
-const TodoApp = ({ currentUid, dataFromFirebase }) => {
-  const CONSTANTS = {
-    ALL: 'ALL',
-    DONE: 'DONE',
-    NOT_DONE: 'NOT_DONE',
-  };
-
+import { CONSTANTS } from './types/types';
+const TodoApp = ({
+  currentUid,
+  dataFromFirebase,
+}: {
+  currentUid: string;
+  dataFromFirebase: any;
+}) => {
   const [filter, setFilter] = useState(CONSTANTS.ALL);
 
   return (
@@ -21,11 +21,10 @@ const TodoApp = ({ currentUid, dataFromFirebase }) => {
         <TaskContainer
           currentUid={currentUid}
           filter={filter}
-          CONSTANTS={CONSTANTS}
           dataFromFirebase={dataFromFirebase}
         />
         <AddTaskPanel currentUid={currentUid} />
-        <Footer CONSTANTS={CONSTANTS} setFilter={setFilter} />
+        <Footer setFilter={setFilter} />
       </Container>
     </div>
   );

@@ -1,5 +1,8 @@
-/* eslint-disable no-unused-vars */
-import { useEffect, useState } from 'react';
+/** @jsxRuntime classic /
+/* @jsx jsx */
+import styled from '@emotion/styled';
+import { css, jsx } from '@emotion/react';
+import { useEffect, useState, createRef } from 'react';
 import firebase from 'firebase';
 import { app } from './components/FirebaseTools/firebase.config';
 import LoginScreen from './components/FirebaseTools/LoginScreen';
@@ -11,17 +14,25 @@ import {
 } from 'react-router-dom';
 import TodoApp from './components/TodoApp';
 import readDataFromFirebase from './components/FirebaseTools/readDataFromFirebase';
+import { Button } from '@mui/material';
+import ServiceSystemToast, {
+  increaseValue,
+  appendToast,
+  removeToast,
+  getToast,
+} from './ServiceSystemToast';
+import React from 'react';
 
 function App() {
-  const [currentUid, setCurrentUid] = useState(null);
+  const [currentUid, setCurrentUid] = useState('');
   const [dataFromFirebase, setDataFromFirebase] = useState([]);
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         setIsLogin(!!firebase.auth().currentUser);
-        setCurrentUid(firebase.auth().currentUser.uid);
+        setCurrentUid(firebase?.auth()?.currentUser?.uid);
         readDataFromFirebase(
-          firebase.auth().currentUser.uid,
+          firebase.auth().currentUser?.uid,
           setDataFromFirebase
         );
       }
@@ -32,8 +43,10 @@ function App() {
 
   return (
     <Router>
-      <Route></Route>
-
+      <ServiceSystemToast />
+      <button onClick={() => appendToast()}>add</button>
+      <button onClick={() => removeToast()}>del</button>
+      <button onClick={() => getToast()}>get</button>
       <Switch>
         <Route path="/todos">
           {isLogin ? (
@@ -49,7 +62,7 @@ function App() {
           {isLogin ? <Redirect to="/todos" /> : <LoginScreen />}
         </Route>
 
-        <Route exact pah="/">
+        <Route exact path="/">
           <Redirect to="/login" />
         </Route>
       </Switch>

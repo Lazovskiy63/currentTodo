@@ -14,59 +14,79 @@ import { Box } from '@mui/system';
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
+import { CONSTANTS } from './types/types';
 
-const TaskContainer = ({ currentUid, CONSTANTS, dataFromFirebase, filter }) => {
+const TaskContainer = ({
+  currentUid,
+  dataFromFirebase,
+  filter,
+}: {
+  currentUid: string;
+  dataFromFirebase: any;
+  filter: string;
+}) => {
   const [isChangeDescription, setIsChangeDescription] = useState('');
-  const [expanded, setExpanded] = useState(false);
-  const [inputDesctiption, setInputDesctiption] = useState('');
+  const [expanded, setExpanded] = useState('');
+  const [inputDescription, setInputDescription] = useState('');
   const [inputLabel, setInputLabel] = useState('');
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
-  console.log(isChangeDescription);
-  console.log(expanded);
-  console.log(inputDesctiption);
-  console.log(inputLabel);
-  const handleChangeTodos = (uid, item) => {
-    if (isChangeDescription === item[0]) {
-      const taskRef = firebase.database().ref('users/' + uid + '/' + item[0]);
+  const handleChange =
+    (panel: string) =>
+    (event: React.SyntheticEvent<Element, Event>, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : '');
+    };
+
+  interface itemFirebase {
+    uid: string;
+    label: string;
+    isDone: boolean;
+    description: string;
+  }
+  const handleChangeTodos = (uid: string, item: itemFirebase) => {
+    if (isChangeDescription === item.uid) {
+      const taskRef = firebase.database().ref('users/' + uid + '/' + item.uid);
       taskRef.update({
-        description: inputDesctiption,
+        description: inputDescription,
         label: inputLabel,
       });
-      setInputDesctiption('');
+      setInputDescription('');
       setInputLabel('');
       setIsChangeDescription('');
     }
     if (isChangeDescription === '') {
-      setIsChangeDescription(item[0]);
-      setInputLabel(item[1].label);
-      setInputDesctiption(item[1].description);
+      setIsChangeDescription(item.uid);
+      setInputLabel(item.label);
+      setInputDescription(item.description);
     }
   };
 
-  const handleKeyDown = (e, uid, item) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>,
+    uid: string,
+    item: itemFirebase
+  ) => {
     if (e.key === 'Enter') {
       handleChangeTodos(uid, item);
     }
   };
-  const handleToggleMark = (uid, item) => {
-    const taskRef = firebase.database().ref('users/' + uid + '/' + item[0]);
-    taskRef.update({ label: item[1].label, isDone: !item[1].isDone });
+  const handleToggleMark = (uid: string, item: itemFirebase) => {
+    const taskRef = firebase.database().ref('users/' + uid + '/' + item.uid);
+    taskRef.update({ label: item.label, isDone: !item.isDone });
   };
-  const handleDeleteTask = (uid, item) => {
-    const taskRef = firebase.database().ref('users/' + uid + '/' + item[0]);
+  const handleDeleteTask = (uid: string, item: itemFirebase) => {
+    const taskRef = firebase.database().ref('users/' + uid + '/' + item.uid);
     taskRef.remove();
   };
-  const filterItems = (filter, todoItems) => {
+  const filterItems = (filter: string, todoItems: itemFirebase[]) => {
     let filteredTodoItems = null;
     switch (filter) {
       case CONSTANTS.DONE:
-        filteredTodoItems = todoItems.filter((item) => item[1].isDone === true);
+        filteredTodoItems = todoItems.filter(
+          (item: itemFirebase) => item.isDone === true
+        );
         break;
       case CONSTANTS.NOT_DONE:
         filteredTodoItems = todoItems.filter(
-          (item) => item[1].isDone === false
+          (item: itemFirebase) => item.isDone === false
         );
         break;
       default:
@@ -76,19 +96,18 @@ const TaskContainer = ({ currentUid, CONSTANTS, dataFromFirebase, filter }) => {
     return filteredTodoItems;
   };
 
-  let filtered = filterItems(filter, Object.entries(dataFromFirebase));
+  let filtered = filterItems(filter, dataFromFirebase);
   return (
     <div>
       <Paper sx={{ height: '500px', overflow: 'auto' }}>
-        {filtered.map((item, index) => {
+        {filtered.map((item: itemFirebase, index: number) => {
           return (
             <Accordion
               key={index}
-              expanded={expanded === item[0]}
-              onChange={handleChange(item[0])}
-              // onFocus={() => setIsChangeDescription('')}
+              expanded={expanded === item.uid}
+              onChange={handleChange(item.uid)}
               onFocus={() => {
-                if (item[0] !== isChangeDescription) {
+                if (item.uid !== isChangeDescription) {
                   setIsChangeDescription('');
                 }
               }}
@@ -106,7 +125,7 @@ const TaskContainer = ({ currentUid, CONSTANTS, dataFromFirebase, filter }) => {
                     width: '-webkit-fill-available',
                   }}
                 >
-                  {isChangeDescription === item[0] ? (
+                  {isChangeDescription === item.uid ? (
                     <Input
                       sx={{ width: '450px', overflow: 'hidden' }}
                       onClick={(e) => e.stopPropagation()}
@@ -119,14 +138,18 @@ const TaskContainer = ({ currentUid, CONSTANTS, dataFromFirebase, filter }) => {
                       sx={{ width: '450px', overflow: 'hidden' }}
                       display="inline-block"
                     >
-                      {item[1].label}
+                      {item.label}
                     </Typography>
                   )}
                   <Checkbox
-                    display="inline-block"
-                    checked={item[1].isDone}
-                    onChange={(e) => handleToggleMark(currentUid, item)}
-                    onClick={(e) => e.stopPropagation()}
+                    sx={{ display: 'inline-block' }}
+                    checked={item.isDone}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleToggleMark(currentUid, item)
+                    }
+                    onClick={(
+                      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                    ) => e.stopPropagation()}
                   />
                 </Box>
               </AccordionSummary>
@@ -138,21 +161,20 @@ const TaskContainer = ({ currentUid, CONSTANTS, dataFromFirebase, filter }) => {
                   }}
                 >
                   <Box sx={{ p: 1, width: '100%', height: '70%' }}>
-                    {isChangeDescription === item[0] ? (
+                    {isChangeDescription === item.uid ? (
                       <Input
                         sx={{ width: '431px', overflow: 'hidden' }}
                         onKeyDown={(e) => handleKeyDown(e, currentUid, item)}
-                        value={inputDesctiption}
-                        onChange={(e) => setInputDesctiption(e.target.value)}
+                        value={inputDescription}
+                        onChange={(e) => setInputDescription(e.target.value)}
                       />
                     ) : (
                       <Typography
                         sx={{
                           wordBreak: 'break-all',
-                          MaxWidth: '431px',
                         }}
                       >
-                        {item[1].description}
+                        {item.description}
                       </Typography>
                     )}
                   </Box>

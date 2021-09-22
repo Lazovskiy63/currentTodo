@@ -1,6 +1,6 @@
 import { Paper, Typography } from '@mui/material';
 
-const Header = ({ dataFromFirebase }) => {
+const Header = ({ dataFromFirebase }: any) => {
   return (
     <Paper
       sx={{
@@ -11,9 +11,7 @@ const Header = ({ dataFromFirebase }) => {
         alignContent: 'center',
       }}
     >
-      <Typography>
-        You have {Object.keys(dataFromFirebase).length} tasks
-      </Typography>
+      <Typography>You have {dataFromFirebase.length} tasks</Typography>
     </Paper>
   );
 };
