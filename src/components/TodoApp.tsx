@@ -1,10 +1,11 @@
 import Header from './Header';
-import TaskContainer from './TaskContainer';
+import TaskContainer from './task-container/TaskContainer';
 import AddTaskPanel from './AddTaskPanel';
 import Footer from './Footer';
 import { useState } from 'react';
 import { Container } from '@mui/material';
 import { CONSTANTS } from './types/types';
+import { app } from './FirebaseTools/firebase.config';
 const TodoApp = ({
   currentUid,
   dataFromFirebase,

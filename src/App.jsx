@@ -1,10 +1,8 @@
 /** @jsxRuntime classic /
 /* @jsx jsx */
-import styled from '@emotion/styled';
-import { css, jsx } from '@emotion/react';
-import { useEffect, useState, createRef } from 'react';
+import { jsx } from '@emotion/react';
+import { useEffect, useState } from 'react';
 import firebase from 'firebase';
-import { app } from './components/FirebaseTools/firebase.config';
 import LoginScreen from './components/FirebaseTools/LoginScreen';
 import {
   BrowserRouter as Router,
@@ -14,18 +12,17 @@ import {
 } from 'react-router-dom';
 import TodoApp from './components/TodoApp';
 import readDataFromFirebase from './components/FirebaseTools/readDataFromFirebase';
-import { Button } from '@mui/material';
 import ServiceSystemToast, {
-  increaseValue,
   appendToast,
   removeToast,
   getToast,
+  TOAST_TYPE,
 } from './ServiceSystemToast';
-import React from 'react';
-
+import { app } from './/components/FirebaseTools/firebase.config';
 function App() {
   const [currentUid, setCurrentUid] = useState('');
   const [dataFromFirebase, setDataFromFirebase] = useState([]);
+
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -44,7 +41,13 @@ function App() {
   return (
     <Router>
       <ServiceSystemToast />
-      <button onClick={() => appendToast()}>add</button>
+      <button
+        onClick={() =>
+          appendToast('ERROR', 'Todos did not loaded', TOAST_TYPE.ALERT)
+        }
+      >
+        add
+      </button>
       <button onClick={() => removeToast()}>del</button>
       <button onClick={() => getToast()}>get</button>
       <Switch>
